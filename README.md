@@ -5,7 +5,7 @@ Homebrew tap for [praxis](https://github.com/michael-duren/praxis).
 ## Install
 
 ```sh
-brew tap michael-duren/praxis-brew https://github.com/michael-duren/praxis-brew
+brew tap michael-duren/praxis-brew
 brew install praxis
 ```
 
@@ -15,24 +15,26 @@ Or in one line:
 brew install michael-duren/praxis-brew/praxis
 ```
 
+This installs the prebuilt binary from the matching praxis GitHub release
+(no Go toolchain required). `brew install --HEAD praxis` builds from the
+`main` branch instead, which does require Go.
+
 ## Updating the formula for a new release
 
 `praxis` releases (via `make release VERSION=vX.Y.Z` in the praxis repo)
-publish prebuilt binaries, but this formula builds from source instead —
-the templ-generated web templates are checked into the praxis repo, so no
-extra codegen tooling is needed at build time.
-
-To bump the formula after a new praxis tag:
+publish binaries and a `SHA256SUMS` manifest for every platform this
+formula targets. To bump the formula after a new praxis tag:
 
 ```sh
-url="https://github.com/michael-duren/praxis/archive/refs/tags/vX.Y.Z.tar.gz"
-curl -sL "$url" | sha256sum
+version=X.Y.Z
+curl -sL "https://github.com/michael-duren/praxis/releases/download/v${version}/SHA256SUMS"
 ```
 
-Update `url` and `sha256` in `Formula/praxis.rb` to match, then:
+Update `version` and the four `sha256` values (darwin-arm64, darwin-amd64,
+linux-arm64, linux-amd64) in `Formula/praxis.rb` to match, then:
 
 ```sh
-brew install --build-from-source ./Formula/praxis.rb
+brew install ./Formula/praxis.rb
 brew test praxis
 brew audit --strict praxis
 ```
